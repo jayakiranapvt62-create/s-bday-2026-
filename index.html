@@ -510,6 +510,55 @@
     color: #c69a4a; margin-top: 4px;
   }
 
+  .music-btn {
+    position: fixed; top: 18px; right: 20px; z-index: 9999;
+    background: rgba(18,25,55,0.8); border: 1px solid var(--line);
+    color: var(--mint); width: 38px; height: 38px; border-radius: 50%;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    font-size: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    backdrop-filter: blur(8px); transition: transform 0.2s, color 0.2s;
+  }
+  .music-btn:hover { transform: scale(1.1); }
+  .music-btn.playing { animation: pulseMusic 1.5s infinite; color: var(--coral); }
+  @keyframes pulseMusic { 0%,100%{ transform: scale(1); } 50%{ transform: scale(1.12); } }
+
+  .candle { cursor: pointer; }
+  .candle-hint {
+    font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--lavender);
+    margin-top: 6px; letter-spacing: 0.05em; opacity: 0.85; animation: pulse 2s infinite;
+  }
+  .smoke {
+    position: absolute; top: -35px; left: 50%; transform: translateX(-50%);
+    width: 8px; height: 8px; background: rgba(255,255,255,0.7); border-radius: 50%;
+    opacity: 0; pointer-events: none;
+  }
+  .smoke.active { animation: riseSmoke 1.8s ease-out forwards; }
+  @keyframes riseSmoke {
+    0% { opacity: 0.8; transform: translate(-50%, 0) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -40px) scale(3); filter: blur(4px); }
+  }
+  .flame.off { display: none; }
+
+  .love-modal {
+    display: none; position: fixed; inset: 0; z-index: 100000;
+    background: rgba(10,14,31,0.75); backdrop-filter: blur(6px);
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  .love-modal.active { display: flex; animation: fadeIn 0.3s ease; }
+  .love-modal-content {
+    background: #fbf3e8; color: #4a1826; border-radius: 16px;
+    padding: 30px 24px; max-width: 380px; width: 100%; text-align: center;
+    position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    font-family: 'Playfair Display', serif;
+  }
+  .love-modal-close {
+    position: absolute; top: 12px; right: 16px; font-size: 22px;
+    color: #9c7a63; cursor: pointer; line-height: 1;
+  }
+  .love-modal-heart { font-size: 32px; margin-bottom: 10px; }
+  .love-modal-title { font-size: 14px; text-transform: uppercase; letter-spacing: 2px; color: #9c7a63; margin-bottom: 8px; }
+  .love-modal-text { font-size: 18px; font-style: italic; line-height: 1.5; color: #3a2620; }
+
   @media (max-width: 420px){
     #secretLetter .a4-paper{ padding: 16px 16px; }
     #secretLetter .a4-paper p{ font-size: 13px; }
@@ -517,6 +566,18 @@
 </style>
 </head>
 <body>
+
+<button class="music-btn" id="musicBtn" title="Toggle Music">🎵</button>
+<audio id="bgMusic" loop src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=romantic-piano-112185.mp3"></audio>
+
+<div id="loveModal" class="love-modal">
+  <div class="love-modal-content">
+    <span class="love-modal-close" id="closeLoveModal">&times;</span>
+    <div class="love-modal-heart">❤️</div>
+    <div class="love-modal-title">Why I Love You</div>
+    <div class="love-modal-text" id="loveModalText"></div>
+  </div>
+</div>
 
 <div class="progress-dots">
   <div class="pdot on" id="pd0"></div>
@@ -530,13 +591,17 @@
   <div class="cake-container">
     <div class="cake-images" id="cakeImages"></div>
     <div class="cake">
-      <div class="candle"><div class="flame"></div></div>
+      <div class="candle" id="candleEl" title="Tap to blow out flame">
+        <div class="flame" id="flameEl"></div>
+        <div class="smoke" id="smokeEl"></div>
+      </div>
       <div class="frosting"></div>
     </div>
   </div>
   <div class="wish-content">
     <div class="wish-title">Happy Birthday, Saaviii 🎂</div>
-    <div class="wish-text">Every day with you is a celebration.<br>May all your dreams and wishes come true, my love... ✨</div>
+    <div class="wish-text" id="wishTextEl">Every day with you is a celebration.<br>May all your dreams and wishes come true, my love... ✨</div>
+    <div class="candle-hint" id="candleHintEl">💡 Tap the candle flame to blow it out & make a wish!</div>
     <div class="cake-btn-wrap">
       <button class="runbtn" id="startBtn">Begin the magic</button>
     </div>
@@ -824,6 +889,9 @@ function renderPhotos(){
     item.className = 'photo-item'
       + (wide ? ' wide' : '')
       + (tall ? ' tall' : '');
+    item.style.cursor = 'pointer';
+    item.title = 'Tap to read a note ♥';
+    item.addEventListener('click', () => showLoveNote(i));
 
     const img = document.createElement('img');
     img.src = src;
@@ -878,10 +946,128 @@ function setupLockForm(){
   });
 }
 
+/* ---------- Interactive Candle Blowing & Music ---------- */
+(function initInteractivity(){
+  // Candle Blow
+  const candle = document.getElementById('candleEl');
+  const flame = document.getElementById('flameEl');
+  const smoke = document.getElementById('smokeEl');
+  const wishText = document.getElementById('wishTextEl');
+  const candleHint = document.getElementById('candleHintEl');
+
+  if(candle){
+    candle.addEventListener('click', () => {
+      if(!flame.classList.contains('off')){
+        flame.classList.add('off');
+        smoke.classList.add('active');
+        if(wishText) wishText.innerHTML = "✨ Your wish has been saved in my heart forever! ❤️ ✨";
+        if(candleHint) candleHint.innerHTML = "🎉 Wish made! Click 'Begin the magic' below.";
+      }
+    });
+  }
+
+  // Music Player
+  const musicBtn = document.getElementById('musicBtn');
+  const bgMusic = document.getElementById('bgMusic');
+  if(musicBtn && bgMusic){
+    musicBtn.addEventListener('click', () => {
+      if(bgMusic.paused){
+        bgMusic.play().then(() => {
+          musicBtn.classList.add('playing');
+          musicBtn.textContent = '🎶';
+        }).catch(() => {});
+      } else {
+        bgMusic.pause();
+        musicBtn.classList.remove('playing');
+        musicBtn.textContent = '🎵';
+      }
+    });
+  }
+
+  // Love Modal Close
+  const closeBtn = document.getElementById('closeLoveModal');
+  const modal = document.getElementById('loveModal');
+  if(closeBtn && modal){
+    closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+    modal.addEventListener('click', (e) => {
+      if(e.target === modal) modal.classList.remove('active');
+    });
+  }
+})();
+
+const LOVE_NOTES = [
+  "How your smile instantly brightens up my worst days.",
+  "Your warm heart and the way you care so deeply.",
+  "How everyday moments feel like magic when I'm with you.",
+  "Simply everything about you — today, tomorrow, and forever."
+];
+
+function showLoveNote(index){
+  const modal = document.getElementById('loveModal');
+  const textEl = document.getElementById('loveModalText');
+  if(modal && textEl){
+    textEl.textContent = LOVE_NOTES[index % LOVE_NOTES.length];
+    modal.classList.add('active');
+  }
+}
+
 function unlockLetter(){
   document.getElementById('lockPanel').classList.add('hidden');
   document.getElementById('letterView').classList.add('unlocked');
   startFloatingHearts();
+  triggerConfetti();
+}
+
+function triggerConfetti(){
+  const canvas = document.createElement('canvas');
+  canvas.style.position = 'fixed';
+  canvas.style.inset = '0';
+  canvas.style.pointerEvents = 'none';
+  canvas.style.zIndex = '999999';
+  document.body.appendChild(canvas);
+
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const particles = [];
+  const colors = ['#FF7A6E', '#c69a4a', '#ff9a90', '#F6F1E7', '#e8735c'];
+
+  for(let i = 0; i < 90; i++){
+    particles.push({
+      x: canvas.width / 2,
+      y: canvas.height / 2,
+      vx: (Math.random() - 0.5) * 16,
+      vy: (Math.random() - 0.7) * 16,
+      size: 6 + Math.random() * 8,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      rotation: Math.random() * 360,
+      vRot: (Math.random() - 0.5) * 10
+    });
+  }
+
+  let frames = 0;
+  function anim(){
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.3; // gravity
+      p.rotation += p.vRot;
+
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate((p.rotation * Math.PI) / 180);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+      ctx.restore();
+    });
+
+    frames++;
+    if(frames < 140) requestAnimationFrame(anim);
+    else canvas.remove();
+  }
+  anim();
 }
 
 function startFloatingHearts(){
