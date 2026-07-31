@@ -422,7 +422,7 @@
   }
 
   #secretLetter .hearts-layer-full{
-    position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 100;
+    position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 99999;
   }
   #secretLetter .float-heart{
     position: absolute; bottom: -30px;
@@ -586,6 +586,7 @@
 
 <!-- STAGE 5: PASSWORD-PROTECTED LOVE LETTER -->
 <div class="screen" id="secretLetter">
+  <div class="hearts-layer-full" id="heartsLayerFull"></div>
 
   <div class="lock-panel" id="lockPanel">
     <div class="lock-seal">🔒</div>
@@ -599,7 +600,6 @@
   </div>
 
   <div class="letter-view" id="letterView">
-    <div class="hearts-layer-full" id="heartsLayerFull"></div>
 
     <div class="a4-paper" id="a4Paper">
       <div class="letter-ornament">✦ ✦ ✦</div>
@@ -906,6 +906,7 @@ function startSecretStage(){
   if(secretStarted) return;
   secretStarted = true;
   setupLockForm();
+  startFloatingHearts();
 }
 
 function setupLockForm(){
