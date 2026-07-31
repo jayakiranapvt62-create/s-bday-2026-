@@ -451,7 +451,7 @@
       radial-gradient(circle at 6% 94%, rgba(109,36,56,0.07), transparent 38%);
     background-size: 22px 22px, 22px 22px, auto, auto;
     border-radius: 2px;
-    padding: clamp(28px, 5vw, 48px) clamp(24px, 4.5vw, 44px);
+    padding: clamp(16px, 3vw, 24px) clamp(16px, 3vw, 24px);
     box-shadow:
       0 0 0 1px rgba(109,36,56,0.08),
       0 30px 80px rgba(0,0,0,0.55),
@@ -475,44 +475,44 @@
 
   #secretLetter .letter-ornament{
     text-align: center; color: #c69a4a;
-    font-size: 22px; letter-spacing: 8px; margin-bottom: 6px;
+    font-size: 16px; letter-spacing: 8px; margin-bottom: 2px;
   }
   #secretLetter .a4-paper h2{
     font-family: 'Playfair Display', serif; font-weight: 600; font-style: italic;
-    font-size: clamp(26px, 5vw, 36px); text-align: center;
-    color: #6d2438; margin: 0 0 4px; line-height: 1.15;
+    font-size: clamp(20px, 4vw, 28px); text-align: center;
+    color: #6d2438; margin: 0 0 2px; line-height: 1.1;
   }
   #secretLetter .letter-to{
-    text-align: center; font-size: 16px; letter-spacing: 3px;
-    text-transform: uppercase; color: #9c7a63; margin-bottom: 22px;
+    text-align: center; font-size: 13px; letter-spacing: 3px;
+    text-transform: uppercase; color: #9c7a63; margin-bottom: 12px;
   }
   #secretLetter .a4-paper p{
-    font-size: clamp(16px, 2.2vw, 19px); line-height: 1.75;
-    margin: 0 0 16px; color: #3a2620;
+    font-size: clamp(13px, 1.8vw, 15px); line-height: 1.5;
+    margin: 0 0 10px; color: #3a2620;
   }
   #secretLetter .a4-paper p .em{
     font-family: 'Cormorant Garamond', serif; font-style: italic; color: #6d2438;
   }
   #secretLetter .letter-divider{
-    width: 70px; height: 1px; background: #c69a4a;
-    margin: 22px auto; opacity: 0.6;
+    width: 50px; height: 1px; background: #c69a4a;
+    margin: 12px auto; opacity: 0.6;
   }
   #secretLetter .letter-closing{
-    text-align: center; font-size: 22px; color: #6d2438;
+    text-align: center; font-size: 18px; color: #6d2438;
     font-family: 'Playfair Display', serif; font-style: italic;
   }
-  #secretLetter .letter-signoff{ margin-top: 26px; text-align: right; }
+  #secretLetter .letter-signoff{ margin-top: 14px; text-align: right; }
   #secretLetter .letter-signoff .from{
-    font-family: 'Caveat', cursive; font-size: 34px; color: #6d2438;
+    font-family: 'Caveat', cursive; font-size: 26px; color: #6d2438;
   }
   #secretLetter .heart-row{
-    text-align: center; font-size: 18px; letter-spacing: 10px;
-    color: #c69a4a; margin-top: 6px;
+    text-align: center; font-size: 16px; letter-spacing: 10px;
+    color: #c69a4a; margin-top: 4px;
   }
 
   @media (max-width: 420px){
-    #secretLetter .a4-paper{ padding: 28px 20px 24px; }
-    #secretLetter .a4-paper p{ font-size: 16px; }
+    #secretLetter .a4-paper{ padding: 16px 16px; }
+    #secretLetter .a4-paper p{ font-size: 13px; }
   }
 </style>
 </head>
@@ -592,7 +592,7 @@
     <h2 class="lock-title">A letter, sealed shut</h2>
     <p class="lock-sub">This one wasn't meant for the world.<br>Enter the password only we know.</p>
     <form class="lock-form" id="lockForm">
-      <input type="password" class="lock-input" id="lockInput" placeholder="anniversary date..." autocomplete="off" />
+      <input type="password" class="lock-input" id="lockInput" placeholder="anniversary date (xxxx.xx.xx)..." autocomplete="off" />
       <button type="submit" class="lock-btn">unlock ♥</button>
       <div class="lock-error" id="lockError">wrong password — try again, saavii</div>
     </form>
