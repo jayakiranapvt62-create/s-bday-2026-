@@ -210,42 +210,96 @@
   }
   .photo-grid{
     display:grid;
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 12px;
-    grid-auto-flow: dense;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 16px;
+    perspective: 1000px;
   }
-  .photo-item{
-    position:relative; border-radius: 10px; overflow:hidden;
-    aspect-ratio: 1;
-    background: #eadfc9;
-    box-shadow: 0 4px 16px -4px rgba(36,28,20,0.2);
-    opacity:0; transform: translateY(10px) scale(0.97);
-    animation: photoIn 0.6s ease forwards;
+  .photo-card-container {
+    perspective: 1000px;
+    height: 190px;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(24px) scale(0.92);
+    animation: photoFloatIn 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
   }
-  .photo-item:nth-child(1){ animation-delay: 0.1s; }
-  .photo-item:nth-child(2){ animation-delay: 0.2s; }
-  .photo-item:nth-child(3){ animation-delay: 0.3s; }
-  .photo-item:nth-child(4){ animation-delay: 0.4s; }
-  .photo-item:nth-child(5){ animation-delay: 0.5s; }
-  .photo-item:nth-child(6){ animation-delay: 0.6s; }
-  .photo-item:nth-child(n+7){ animation-delay: 0.7s; }
-  @keyframes photoIn{
-    to{ opacity:1; transform: translateY(0) scale(1); }
+  @keyframes photoFloatIn {
+    to { opacity: 1; transform: translateY(0) var(--rot, rotate(0deg)); }
   }
-  .photo-item img{
-    width:100%; height:100%; object-fit:cover; display:block;
-    transition: transform 0.35s ease;
+  .photo-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.8s cubic-bezier(0.4, 0.2, 0.2, 1);
+    transform-style: preserve-3d;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px -4px rgba(0,0,0,0.3);
   }
-  .photo-item:hover img{ transform: scale(1.05); }
-  .photo-item.wide{ grid-column: span 2; aspect-ratio: 2/1; }
-  .photo-item.tall{ grid-row: span 2; aspect-ratio: 3/4; }
-  .photo-item img.fit-contain{ object-fit: contain; background: #f5ebe0; }
-  .photo-placeholder{
-    width:100%; height:100%; display:flex; flex-direction:column;
-    align-items:center; justify-content:center; gap:8px;
-    padding:12px; text-align:center;
-    border: 2px dashed rgba(180,99,47,0.35);
-    border-radius: 10px; background: rgba(234,223,201,0.5);
+  .photo-card-container:hover .photo-card-inner {
+    transform: translateY(-4px) scale(1.03);
+    box-shadow: 0 14px 28px -4px rgba(255,122,110,0.45);
+  }
+  .photo-card-container.flipped .photo-card-inner {
+    transform: rotateY(180deg);
+  }
+  .photo-card-front, .photo-card-back {
+    position: absolute;
+    inset: 0;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fbf3e8;
+    border: 5px solid #fff;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.05);
+  }
+  .photo-card-front img {
+    width: 100%;
+    height: calc(100% - 24px);
+    object-fit: cover;
+    display: block;
+    border-radius: 6px;
+  }
+  .photo-card-caption {
+    position: absolute;
+    bottom: 2px;
+    left: 0;
+    right: 0;
+    font-family: 'Caveat', cursive;
+    font-size: 15px;
+    color: #4a1826;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0 4px;
+  }
+  .photo-card-back {
+    transform: rotateY(180deg);
+    background: linear-gradient(135deg, #fbf3e8, #f5ebe0);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 14px;
+  }
+  .photo-card-back-heart {
+    font-size: 24px;
+    margin-bottom: 6px;
+  }
+  .photo-card-back-text {
+    font-family: 'Caveat', cursive;
+    font-size: 19px;
+    line-height: 1.35;
+    color: #6d2438;
+  }
+  .photo-card-back-hint {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 8.5px;
+    color: #9c7a63;
+    margin-top: 6px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
   }
   .photo-placeholder span{
     font-family:'JetBrains Mono',monospace; font-size:10px;
@@ -868,49 +922,38 @@ function renderPhotos(){
   const grid = document.getElementById('photoGrid');
   grid.innerHTML = '';
 
-  if(!PHOTOS.length){
-    for(let i=1; i<=3; i++){
-      const item = document.createElement('div');
-      item.className = 'photo-item';
-      item.innerHTML = '<div class="photo-placeholder"><span>📷 photo ' + i + '</span><span>add path in PHOTOS config</span></div>';
-      grid.appendChild(item);
-    }
-    return;
-  }
+  if(!PHOTOS.length) return;
 
   PHOTOS.forEach((photo, i) => {
     const src = typeof photo === 'string' ? photo : photo.src;
-    const caption = typeof photo === 'object' ? photo.caption : '';
-    const wide = typeof photo === 'object' && photo.wide;
-    const tall = typeof photo === 'object' && photo.tall;
-    const fit = typeof photo === 'object' ? photo.fit : '';
+    const caption = typeof photo === 'object' && photo.caption ? photo.caption : ('memory ' + (i + 1));
+    const note = LOVE_NOTES[i % LOVE_NOTES.length];
+    const rot = (i % 2 === 0 ? -1.8 : 1.8) * ((i % 3) + 1);
 
-    const item = document.createElement('div');
-    item.className = 'photo-item'
-      + (wide ? ' wide' : '')
-      + (tall ? ' tall' : '');
-    item.style.cursor = 'pointer';
-    item.title = 'Tap to read a note ♥';
-    item.addEventListener('click', () => showLoveNote(i));
+    const container = document.createElement('div');
+    container.className = 'photo-card-container';
+    container.style.setProperty('--rot', `rotate(${rot}deg)`);
+    container.style.animationDelay = `${(i + 1) * 0.15}s`;
 
-    const img = document.createElement('img');
-    img.src = src;
-    img.alt = caption || ('memory ' + (i + 1));
-    img.loading = 'lazy';
-    if(fit === 'contain') img.classList.add('fit-contain');
-    img.onerror = () => {
-      item.innerHTML = '<div class="photo-placeholder"><span>could not load</span><span>' + src + '</span></div>';
-    };
-    item.appendChild(img);
+    container.innerHTML = `
+      <div class="photo-card-inner">
+        <div class="photo-card-front">
+          <img src="${src}" alt="${caption}" loading="lazy" />
+          <div class="photo-card-caption">${caption}</div>
+        </div>
+        <div class="photo-card-back">
+          <div class="photo-card-back-heart">❤️</div>
+          <div class="photo-card-back-text">"${note}"</div>
+          <div class="photo-card-back-hint">tap to flip back</div>
+        </div>
+      </div>
+    `;
 
-    if(caption){
-      const cap = document.createElement('div');
-      cap.className = 'photo-caption';
-      cap.textContent = caption;
-      item.appendChild(cap);
-    }
+    container.addEventListener('click', () => {
+      container.classList.toggle('flipped');
+    });
 
-    grid.appendChild(item);
+    grid.appendChild(container);
   });
 }
 
