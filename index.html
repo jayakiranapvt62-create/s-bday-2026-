@@ -398,19 +398,58 @@
     position: relative; z-index: 2;
     animation: rise 0.7s ease-out;
   }
-  #secretLetter .lock-seal{
-    width: 88px; height: 88px; margin: 0 auto 28px;
+  #secretLetter .couple-lock-seal {
+    position: relative;
+    width: 140px;
+    height: 90px;
+    margin: 0 auto 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  #secretLetter .avatar-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  #secretLetter .avatar-img {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #d7ac57;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+    background: #6d2438;
+  }
+  #secretLetter .avatar-img.left {
+    transform: translateX(10px);
+    z-index: 1;
+  }
+  #secretLetter .avatar-img.right {
+    transform: translateX(-10px);
+    z-index: 2;
+  }
+  #secretLetter .encrypt-badge {
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 38px;
+    height: 38px;
     border-radius: 50%;
     background: radial-gradient(circle at 35% 30%, #d7ac57, #c69a4a 60%, #9c7530);
-    box-shadow: 0 8px 32px -4px rgba(0,0,0,0.4), inset 0 2px 8px rgba(255,255,255,0.35);
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Playfair Display', serif; font-size: 22px; font-style: italic;
-    color: #4a1826;
+    border: 2px solid #4a1826;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    z-index: 3;
     animation: goldSealPulse 2.4s ease-in-out infinite;
   }
   @keyframes goldSealPulse{
-    0%,100%{ box-shadow: 0 8px 32px -4px rgba(0,0,0,0.4), 0 0 0 0 rgba(199,154,74,0.5); }
-    50%{ box-shadow: 0 12px 40px -2px rgba(0,0,0,0.45), 0 0 0 12px rgba(199,154,74,0); }
+    0%,100%{ box-shadow: 0 6px 20px -2px rgba(0,0,0,0.5), 0 0 0 0 rgba(199,154,74,0.6); }
+    50%{ box-shadow: 0 10px 28px -2px rgba(0,0,0,0.5), 0 0 0 10px rgba(199,154,74,0); }
   }
   #secretLetter .lock-title{
     font-family: 'Playfair Display', serif; font-size: clamp(24px, 5vw, 32px);
@@ -694,7 +733,13 @@
   <div class="hearts-layer-full" id="heartsLayerFull"></div>
 
   <div class="lock-panel" id="lockPanel">
-    <div class="lock-seal">🔒</div>
+    <div class="couple-lock-seal">
+      <div class="avatar-wrap">
+        <img src="images/photo1.png" class="avatar-img left" alt="us" />
+        <img src="images/photo2.png" class="avatar-img right" alt="us" />
+      </div>
+      <div class="encrypt-badge">🔐</div>
+    </div>
     <h2 class="lock-title">A letter, sealed shut</h2>
     <p class="lock-sub">This one wasn't meant for the world.<br>Enter the password only we know.</p>
     <form class="lock-form" id="lockForm">
