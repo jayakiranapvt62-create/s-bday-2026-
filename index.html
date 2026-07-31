@@ -886,10 +886,10 @@ function startParticles(){
 
   setTimeout(() => {
     cancelAnimationFrame(raf);
-    goToStage(3);
+    goToStage(2);
   }, 3600);
 }
-function goToStage3Auto(){ setTimeout(() => goToStage(3), 300); }
+function goToStage3Auto(){ setTimeout(() => goToStage(2), 300); }
 
 /* ---------- Reveal: floating hearts + photo gallery ---------- */
 let revealStarted = false;
@@ -915,7 +915,7 @@ function startReveal(){
 
   renderPhotos();
 
-  document.getElementById('openSecretBtn').addEventListener('click', () => goToStage(4));
+  document.getElementById('openSecretBtn').addEventListener('click', () => goToStage(3));
 }
 
 function renderPhotos(){
