@@ -701,16 +701,17 @@ function goToStage(n){
 
 /* ---------- Terminal: git log style ---------- */
 const gitLines = [
-  { html: '<span class="hash">$</span> <span class="cmd">git log --graph --oneline --all</span>', pause: 500 },
-  { html: '<span class="graph">*</span> <span class="hash">a1b2c3d</span> <span class="msg">first "hey" — nervous, typed it three times before sending</span>', pause: 550 },
-  { html: '<span class="graph">*</span> <span class="hash">e4f5a6b</span> <span class="msg">first date — couldn\'t stop looking at your smile</span>', pause: 550 },
-  { html: '<span class="graph">*</span> <span class="hash">7c8d9e0</span> <span class="msg">late night calls — talking until the sun came up</span>', pause: 550 },
-  { html: '<span class="graph">*</span> <span class="hash">f1a2b3c</span> <span class="msg">the small moments — making ordinary days feel so special</span>', pause: 550 },
-  { html: '<span class="graph">*</span> <span class="hash">d4e5f6a</span> <span class="msg">said "i love you" — no going back after this commit</span>', pause: 600 },
-  { html: '<span class="graph">*</span> <span class="hash">HEAD -></span> <span class="cmd">main</span> <span class="msg">still here, still choosing her</span>', pause: 500 },
-  { html: '', pause: 200 },
-  { html: '<span class="meta">// ' + gitYear() + ' commits, 0 reverts, infinite branches to go</span>', pause: 500 },
-  { html: '<span class="hash">$</span> <span class="cmd">npm run birthday --for=Saaviii</span> <span class="meta">// auto-executing...</span>', pause: 400 },
+  { html: '<span class="hash">$</span> <span class="cmd">git log --graph --oneline --all</span>', pause: 300 },
+  { html: '<span class="graph">*</span> <span class="hash">a1b2c3d</span> <span class="msg">first "hey" — nervous, typed it three times before sending</span>', pause: 350 },
+  { html: '<span class="graph">*</span> <span class="hash">e4f5a6b</span> <span class="msg">first date — couldn\'t stop looking at your smile</span>', pause: 350 },
+  { html: '<span class="graph">*</span> <span class="hash">7c8d9e0</span> <span class="msg">late night calls — talking until the sun came up</span>', pause: 350 },
+  { html: '<span class="graph">*</span> <span class="hash">f1a2b3c</span> <span class="msg">the small moments — making ordinary days feel so special</span>', pause: 350 },
+  { html: '<span class="graph">*</span> <span class="hash">d4e5f6a</span> <span class="msg">said "i love you" — no going back after this commit</span>', pause: 350 },
+  { html: '<span class="graph">*</span> <span class="hash">HEAD -></span> <span class="cmd">main</span> <span class="msg">still here, still choosing her</span>', pause: 300 },
+  { html: '', pause: 150 },
+  { html: '<span class="meta">// ' + gitYear() + ' commits, 0 reverts, infinite branches to go</span>', pause: 300 },
+  { html: '<span class="hash">$</span> <span class="cmd">npm run birthday --for=Saaviii</span>', pause: 350 },
+  { html: '<span class="msg">✔ Compiled successfully! Opening memories...</span>', pause: 400 },
 ];
 function gitYear(){ return new Date().getFullYear(); }
 
@@ -721,6 +722,10 @@ function startTerminal(){
   const el = document.getElementById('termBody');
   const runBtn = document.getElementById('runBtn');
   const hint = document.getElementById('termHint');
+  const termWindow = document.querySelector('.term-window');
+
+  if(termWindow) termWindow.addEventListener('click', () => goToStage(2));
+
   (async () => {
     let html = '';
     for(const line of gitLines){
@@ -731,11 +736,10 @@ function startTerminal(){
     }
     runBtn.disabled = false;
     runBtn.textContent = '▶ running...';
-    hint.textContent = 'executing...';
-    await sleep(1500);
+    hint.textContent = 'auto-advancing...';
+    await sleep(600);
     goToStage(2);
   })();
-  runBtn.addEventListener('click', () => goToStage(2));
 }
 function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
 
